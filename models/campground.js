@@ -1,13 +1,34 @@
 const { Schema } = require("mongoose");
 const Review=require('./review');
 const mongoose=require('mongoose');
+const { string } = require("joi");
 const schema=mongoose.Schema;
+const options = { toJSON: { virtuals: true } };
+const ImageSchema = new Schema({
+    url: String,
+    filename: String
+});
+
+ImageSchema.virtual('thumbnail').get(function () {
+    return this.url.replace('/upload', '/upload/w_200');
+});
 
 const campgroundSchema=new schema({
     title:String,
     price:Number,
-    image:String,
     description:String,
+    images: [ImageSchema],
+    geometry: {
+        type: {
+            type: String,
+            enum: ['Point'],
+            required: true
+        },
+        coordinates: {
+            type: [Number],
+            required: true
+        }
+    },
     location:String,
     author:{
         type: Schema.Types.ObjectId, 
@@ -18,6 +39,11 @@ const campgroundSchema=new schema({
          type: Schema.Types.ObjectId, 
             ref:'Review' 
         }]
+},options);
+campgroundSchema.virtual('properties.popUpMarkup').get(function () {
+    return `
+    <strong><a href="/campgrounds/${this._id}">${this.title}</a><strong>
+    <p>${this.description.substring(0, 20)}...</p>`
 });
 campgroundSchema.post('findOneAndDelete',async function(doc){
     if(doc)
