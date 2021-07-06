@@ -45,7 +45,7 @@ This project was created using Node.js, Express, MongoDB, and Bootstrap. Passpor
 
 * Improve image load time on the landing page using Cloudinary
 
-* Use Helmet to strengthen security
+* Used Helmet to strengthen security
 
 ## Built with
 
